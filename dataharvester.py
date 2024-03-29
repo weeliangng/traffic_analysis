@@ -1,10 +1,11 @@
 import requests
+import json
 
 def extract_taxi_data():
     url = "https://api.data.gov.sg/v1/transport/taxi-availability"
     response = requests.get(url)
     data = response.json()
-    geojson_data = data['features'][0]
+    geojson_data = json.dumps(data['features'][0])
     timestamp = data['features'][0]['properties']['timestamp']
     return timestamp, geojson_data
 
