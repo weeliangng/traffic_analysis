@@ -7,11 +7,13 @@ def ingest_taxi_data(timestamp, geojson_data):
     table_name = 'taxi_availability'
     project_id = 'traffic-analysis-418408'
 
-    key_path = 'traffic-analysis-418408-05b85d3a4f63.json'
+    #key_path = 'traffic-analysis-418408-05b85d3a4f63.json'
 
-    credentials = service_account.Credentials.from_service_account_file(key_path)
+    #credentials = service_account.Credentials.from_service_account_file(key_path)
 
-    client = bigquery.Client(credentials=credentials)
+    #client = bigquery.Client(credentials=credentials)
+
+    client = bigquery.Client()
     table_ref = client.dataset(dataset_name).table(table_name)
 
     table = client.get_table(table_ref)
