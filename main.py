@@ -4,8 +4,8 @@ import dataharvester
 import bigqueryingestor
 
 def main():
-    timestamp, geojson_data = dataharvester.extract_taxi_data()
-    bigqueryingestor.ingest_taxi_data(timestamp, geojson_data)
+    taxi_data = dataharvester.extract_taxi_data()
+    bigqueryingestor.ingest_taxi_data(taxi_data)
 
 # Register an HTTP function with the Functions Framework
 @functions_framework.http

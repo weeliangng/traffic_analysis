@@ -1,7 +1,7 @@
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-def ingest_taxi_data(timestamp, geojson_data):
+def ingest_taxi_data(taxi_data):
 
     dataset_name = 'taxi_availability'
     table_name = 'taxi_availability'
@@ -17,10 +17,15 @@ def ingest_taxi_data(timestamp, geojson_data):
     table_ref = client.dataset(dataset_name).table(table_name)
 
     table = client.get_table(table_ref)
-    rows_to_insert = [
-            {"timestamp": timestamp, "taxi_availability": geojson_data},
-            # Add more rows as needed
-        ]
+    rows_to_insert = []
+    for geometry in taxi_data['geometry_list']:
+        rows_to_insert.append(
+            {"timestamp": taxi_data['timestamp'], 
+             "taxi_availability": geometry,
+             "taxi_count": taxi_data['taxi_count'],
+             "api_status": taxi_data['api_status']
+             })
+
 
     errors = client.insert_rows_json(table, rows_to_insert)
     if errors == []:
