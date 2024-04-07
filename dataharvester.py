@@ -1,6 +1,7 @@
 import requests
 import json
 from shapely.geometry import shape
+import backdatedtimestamp
 
 def extract_taxi_data():
     url = "https://api.data.gov.sg/v1/transport/taxi-availability"
@@ -10,11 +11,11 @@ def extract_taxi_data():
     timestamp = featurecollection['features'][0]['properties']['timestamp']
     taxi_count = featurecollection['features'][0]['properties']['taxi_count']
     api_status = featurecollection['features'][0]['properties']['api_info']['status']
-    return {
+    return [{
         'timestamp': timestamp, 
         'taxi_count': taxi_count, 
         'geometry_list': geometry_list, 
-        'api_status': api_status}
+        'api_status': api_status}]
 
 def extract_taxi_data_timestamp(timestamp):
     #timestamp format = '2021-03-26T14:19:39+08:00'
@@ -26,11 +27,19 @@ def extract_taxi_data_timestamp(timestamp):
     timestamp = featurecollection['features'][0]['properties']['timestamp']
     taxi_count = featurecollection['features'][0]['properties']['taxi_count']
     api_status = featurecollection['features'][0]['properties']['api_info']['status']
-    return {
+    return [{
         'timestamp': timestamp, 
         'taxi_count': taxi_count, 
         'geometry_list': geometry_list, 
-        'api_status': api_status}
+        'api_status': api_status}]
+
+def extract_taxi_data_date(date_str):
+    minute_intervals_str = backdatedtimestamp.get_datetime_intervals(date_str)
+    payload = []
+    for time_intervals in minute_intervals_str:
+        taxi_data = extract_taxi_data_timestamp(time_intervals)
+        payload += taxi_data
+    return payload
 
 def extract_geometry_from_collection(featurecollection):
     geometry_list = []
