@@ -7,10 +7,7 @@ def extract_taxi_data():
     url = "https://api.data.gov.sg/v1/transport/taxi-availability"
     response = requests.get(url)
     featurecollection = response.json()
-    geometry_list = extract_geometry_from_collection(featurecollection)
-    timestamp = featurecollection['features'][0]['properties']['timestamp']
-    taxi_count = featurecollection['features'][0]['properties']['taxi_count']
-    api_status = featurecollection['features'][0]['properties']['api_info']['status']
+    timestamp, taxi_count, geometry_list, api_status = extract_data_from_taxi_api_response(response)
     return [{
         'timestamp': timestamp, 
         'taxi_count': taxi_count, 
@@ -22,16 +19,21 @@ def extract_taxi_data_timestamp(timestamp):
     url = "https://api.data.gov.sg/v1/transport/taxi-availability"
     payload = {'date_time' : timestamp}
     response = requests.get(url, params = payload)
-    featurecollection = response.json()
-    geometry_list = extract_geometry_from_collection(featurecollection)
-    timestamp = featurecollection['features'][0]['properties']['timestamp']
-    taxi_count = featurecollection['features'][0]['properties']['taxi_count']
-    api_status = featurecollection['features'][0]['properties']['api_info']['status']
+    timestamp, taxi_count, geometry_list, api_status = extract_data_from_taxi_api_response(response)
     return [{
         'timestamp': timestamp, 
         'taxi_count': taxi_count, 
         'geometry_list': geometry_list, 
         'api_status': api_status}]
+
+def extract_data_from_taxi_api_response(response):
+    featurecollection = response.json()
+    geometry_list = extract_geometry_from_collection(featurecollection)
+    timestamp = featurecollection['features'][0]['properties']['timestamp']
+    taxi_count = featurecollection['features'][0]['properties']['taxi_count']
+    api_status = featurecollection['features'][0]['properties']['api_info']['status']
+    return timestamp, taxi_count, geometry_list, api_status
+
 
 def extract_taxi_data_date(date_str):
     minute_intervals_str = backdatedtimestamp.get_datetime_intervals(date_str)
