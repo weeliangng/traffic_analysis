@@ -41,6 +41,7 @@ def extract_taxi_data_date(date_str):
     for time_intervals in minute_intervals_str:
         taxi_data = extract_taxi_data_timestamp(time_intervals)
         payload += taxi_data
+    print("payload ready")
     return payload
 
 def extract_geometry_from_collection(featurecollection):

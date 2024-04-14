@@ -14,6 +14,7 @@ def ingest_taxi_data(payload):
     #client = bigquery.Client(credentials=credentials)
 
     client = bigquery.Client()
+    
     table_ref = client.dataset(dataset_name).table(table_name)
 
     table = client.get_table(table_ref)
@@ -26,10 +27,11 @@ def ingest_taxi_data(payload):
                 "taxi_count": taxi_data['taxi_count'],
                 "api_status": taxi_data['api_status']
                 })
-
-
-    errors = client.insert_rows_json(table, rows_to_insert)
-    if errors == []:
-        print("New rows have been added.")
-    else:
-        print("Encountered errors while inserting rows: {}".format(errors))
+    batch_size = 120
+    for i in range(0, len(rows_to_insert), batch_size):
+        batch = rows_to_insert[i:i + batch_size]
+        errors = client.insert_rows_json(table, batch, timeout = 1000)
+        if errors == []:
+            print("New rows have been added.")
+        else:
+            print("Encountered errors while inserting rows: {}".format(errors))
