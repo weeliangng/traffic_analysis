@@ -4,7 +4,7 @@ import plotly.express as px
 from sklearn.cluster import DBSCAN
 import pandas as pd
 
-def assign_cluster(date_str):
+def get_bigquery_taxi_data(date_str):
     dataset_name = 'taxi_availability'
     table_name = 'taxi_availability'
     project_id = 'traffic-analysis-418408'
@@ -18,6 +18,16 @@ def assign_cluster(date_str):
     client = bigquery.Client()
 
     df = client.query(query).to_geodataframe()
+    if df.empty:
+        raise ValueError(f"No data available for the specified date: {date_str}")
+    else: return df
+
+
+def assign_cluster(date_str):
+    try: 
+        df = get_bigquery_taxi_data(date_str)
+    except ValueError as e:
+        print(e)
     df.timestamp = df.timestamp.dt.tz_convert('Asia/Singapore')
 
     df_exploded = df.explode(index_parts=False)
@@ -32,4 +42,3 @@ def assign_cluster(date_str):
     #df_exploded = df_exploded.loc[df_exploded.cluster != -1]
     #df_exploded["cluster"] = df_exploded["cluster"].map(str)
 
-    
