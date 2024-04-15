@@ -1,9 +1,9 @@
-from geopandas import GeoDataFrame
 from google.cloud import bigquery
 from sklearn.cluster import DBSCAN
 
 
 def get_bigquery_taxi_data(date_str):
+    '''Takes date_str in the format of yyyy-mm-dd'''
     dataset_name = 'taxi_availability'
     table_name = 'taxi_availability'
     project_id = 'traffic-analysis-418408'
@@ -42,6 +42,7 @@ def write_cluster_data(df):
     job = client.load_table_from_dataframe(df, table_id, job_config=job_config)
 
 def assign_cluster(date_str):
+    '''Takes date_str in the format of yyyy-mm-dd'''
     try: 
         df = get_bigquery_taxi_data(date_str)
     except ValueError as e:
